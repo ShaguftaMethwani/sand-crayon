@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <title>Hello!</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/styles.css">
+    
+
+  </head>
+  <body>
+    <script type="text/javascript">
+     var img = document.createElement("img");
+    img.src = "https://cdn.glitch.com/09f775dc-81f4-4277-98f4-e292a3e78efe%2FCapturue.PNG?1512017632014";
+    
+
+    // This next line will just add it to the <body> tag
+    document.body.appendChild(img);
+    </script>
+    <div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'London')">VFA</button>
+  <button class="tablinks" onclick="openCity(event, 'Paris')">Visual tab</button>
+  <button class="tablinks" onclick="openCity(event, 'Tokyo')">Stats</button>
+</div>
+
+
+
+<div id="Paris" class="tabcontent">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+</div>
+
+<div id="Tokyo" class="tabcontent">
+  <h3>Tokyo</h3>
+  <p>Tokyo is the capital of Japan.</p>
+</div>
+    
+    
+    
+    
+    
+  <div id="London">
+    
+    
+    <script type="text/javascript" src="//vhss-d.oddcast.com/vhost_embed_functions_v2.php?acc=1617243&js=1"></script><script type="text/javascript">AC_VHost_Embed(6598213,700,1500,'',1,1, 2591537, 0,1,0,'ec037690e6c2f5579fe62767c4568f56',0);</script>
+    
+    <input id="bbutton" type="button" value="Speak"/>
+
+
+      <script type="text/javascript">
+        function openCity(evt, cityName) {
+    
+    var i, tabcontent, tablinks;
+
+    
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+   
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+  
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
+
+var phrases = [
+  'i love to sing because it\'s fun',
+  'where are you going',
+  'can I call you tomorrow',
+  'why did you talk while I was talking',
+  'she enjoys reading books and playing games',
+  'where are you going',
+  'have a great day',
+  'she sells seashells on the seashore'
+]
+
+
+var testBtn = document.getElementById('bbutton');
+
+
+function testSpeech() {
+  testBtn.disabled = true;
+  testBtn.textContent = 'Test in progress';
+
+
+  var grammar = '#JSGF V1.0; grammar phrase; public <phrase> = ' + phrases.join(' | ') + ' ;'
+  var recognition = new SpeechRecognition();
+  var speechRecognitionList = new SpeechGrammarList();
+  speechRecognitionList.addFromString(grammar, 1);
+  
+  recognition.grammars = speechRecognitionList;
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+console.log(recognition);
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
+    // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
+    // It has a getter so it can be accessed like an array
+    // The first [0] returns the SpeechRecognitionResult at position 0.
+    // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
+    // These also have getters so they can be accessed like arrays.
+    // The second [0] returns the SpeechRecognitionAlternative at position 0.
+    // We then return the transcript property of the SpeechRecognitionAlternative object 
+    var speechResult = event.results[0][0].transcript;
+  console.log(speechResult);
+    
+    
+    
+    
+    if (speechResult.indexOf("my savings") >= 0) {
+      console.log("wah");
+     sayText('Let me show you a visualisation of your savings per year!',1,1,3);
+openCity(event, 'Paris');
+      
+
+
+	var height = 300;
+	var width = 600;
+	var margin = {top: 20, right:20, bottom: 50, left: 20};
+	
+	// formatters for axis and labels
+	var currencyFormat = d3.format("$0.2f");
+	var decimalFormat = d3.format("0.2f");
+	
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+	svg.append("g")
+		.attr("class", "y axis");
+		
+	svg.append("g")
+		.attr("class", "x axis");
+		
+	var xScale = d3.scale.ordinal()
+		.rangeRoundBands([margin.left, width], .1);
+		
+	var yScale = d3.scale.linear()
+		.range([height, 0]);
+	
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+		
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left");
+	
+	d3.csv("https://cdn.glitch.com/09f775dc-81f4-4277-98f4-e292a3e78efe%2FAbc.csv?1512001286441", function(data) {
+		
+		// extract the x labels for the axis and scale domain
+		var xLabels = data.map(function (d) { return d['yearmonth']; })
+	
+		xScale.domain(xLabels);
+		yScale.domain([0, Math.round(d3.max(data, function(d) { return parseFloat(d['rate']); }))]);
+		
+		var line = d3.svg.line()
+			.x(function(d) { return xScale(d['yearmonth']); })
+			.y(function(d) { return yScale(d['rate']); });
+		
+		svg.append("path")
+			.datum(data)
+			.attr("class","line")
+			.attr("d", line);
+		
+		svg.select(".x.axis")
+			.attr("transform", "translate(0," + (height) + ")")
+			.call(xAxis.tickValues(xLabels.filter(function(d, i) { 
+				if (i % 12 == 0)
+					return d;
+				})))
+			.selectAll("text")
+			.style("text-anchor","end")
+			.attr("transform", function(d) {
+				return "rotate(-45)";
+			});
+		
+		svg.select(".y.axis")
+			.attr("transform", "translate(" + (margin.left) + ",0)")
+			.call(yAxis.tickFormat(currencyFormat));
+			
+		// chart title
+		svg.append("text")
+			.attr("x", (width + (margin.left + margin.right) )/ 2)
+			.attr("y", 0 + margin.top)
+			.attr("text-anchor", "middle")
+			.style("font-size", "16px")
+			.style("font-family", "sans-serif")
+			.text("Savings per year");
+		
+		// x axis label
+		svg.append("text")
+			.attr("x", (width + (margin.left + margin.right) )/ 2)
+			.attr("y", height + margin.bottom)
+			.attr("class", "text-label")
+			.attr("text-anchor", "middle")
+			.text("Year-Month");
+		
+		// get the x and y values for least squares
+		var xSeries = d3.range(1, xLabels.length + 1);
+		var ySeries = data.map(function(d) { return parseFloat(d['rate']); });
+		
+		var leastSquaresCoeff = leastSquares(xSeries, ySeries);
+		
+		// apply the reults of the least squares regression
+		var x1 = xLabels[0];
+		var y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1];
+		var x2 = xLabels[xLabels.length - 1];
+		var y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1];
+		var trendData = [[x1,y1,x2,y2]];
+		
+		var trendline = svg.selectAll(".trendline")
+			.data(trendData);
+			
+		trendline.enter()
+			.append("line")
+			.attr("class", "trendline")
+			.attr("x1", function(d) { return xScale(d[0]); })
+			.attr("y1", function(d) { return yScale(d[1]); })
+			.attr("x2", function(d) { return xScale(d[2]); })
+			.attr("y2", function(d) { return yScale(d[3]); })
+			.attr("stroke", "black")
+			.attr("stroke-width", 1);
+		
+		// display equation on the chart
+		svg.append("text")
+			.text("eq: " + decimalFormat(leastSquaresCoeff[0]) + "x + " + 
+				decimalFormat(leastSquaresCoeff[1]))
+			.attr("class", "text-label")
+			.attr("x", function(d) {return xScale(x2) - 60;})
+			.attr("y", function(d) {return yScale(y2) - 30;});
+		
+		// display r-square on the chart
+		svg.append("text")
+			.text("r-sq: " + decimalFormat(leastSquaresCoeff[2]))
+			.attr("class", "text-label")
+			.attr("x", function(d) {return xScale(x2) - 60;})
+			.attr("y", function(d) {return yScale(y2) - 10;});
+
+	});
+	
+	// returns slope, intercept and r-square of the line
+	function leastSquares(xSeries, ySeries) {
+		var reduceSumFunc = function(prev, cur) { return prev + cur; };
+		
+		var xBar = xSeries.reduce(reduceSumFunc) * 1.0 / xSeries.length;
+		var yBar = ySeries.reduce(reduceSumFunc) * 1.0 / ySeries.length;
+
+		var ssXX = xSeries.map(function(d) { return Math.pow(d - xBar, 2); })
+			.reduce(reduceSumFunc);
+		
+		var ssYY = ySeries.map(function(d) { return Math.pow(d - yBar, 2); })
+			.reduce(reduceSumFunc);
+			
+		var ssXY = xSeries.map(function(d, i) { return (d - xBar) * (ySeries[i] - yBar); })
+			.reduce(reduceSumFunc);
+			
+		var slope = ssXY / ssXX;
+		var intercept = yBar - (xBar * slope);
+		var rSquare = Math.pow(ssXY, 2) / (ssXX * ssYY);
+		
+		return [slope, intercept, rSquare];
+	}
+    
+
+      sayText('Looks like this year you will be saving around 400 US dollars!',1,1,3);
+    } else if((speechResult.indexOf("where") >= 0 && speechResult.indexOf("investment") >= 0)||(speechResult.indexOf("where") >= 0 && speechResult.indexOf("invest")>=0 )||(speechResult.indexOf("suggest") >= 0 )||(speechResult.indexOf("suggestions")>=0)||(speechResult.indexOf("suggestion")>=0))
+              {
+      sayText('People with similar savings have also invested on equities and gained 10% within a year! Wanna give that a try?',1,1,3);
+      
+    }
+    else if((speechResult.indexOf("should I invest") >= 0 && speechResult.indexOf("mutual funds")>=0)||(speechResult.indexOf("can I invest") >= 0 && speechResult.indexOf("mutual funds")>=0 ) )
+              {
+                
+                var matches = speechResult.match(/\d+/g);
+if (matches != null) {
+   
+     
+            var str='Looks like you can invest '+parseInt(speechResult.split(" ")[3])*0.7+' in fixed income avenues and the rest in mutual funds';
+}
+                else{
+                   sayText('Analysis on your savings and risk appetite tells me that might not be a great idea. However you can consider investing in fixed income avenues',1,1,3);
+                }
+    }
+    else{
+      
+      
+      
+      console.log(speechResult[2]);
+      sayText('People with similar savings have also invested on equities and gained 10% within 2 years. That seems a good area for you to delve in.',1,1,3);
+      
+      
+      var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("https://cdn.glitch.com/09f775dc-81f4-4277-98f4-e292a3e78efe%2Fresult.csv?1512019929737", function(error, data) {
+  if (error) throw error;
+
+  data.forEach(function(d) {
+    d.Year = +d.Year;
+    d[1] = +d[1];
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.Year; })).nice();
+  y.domain(d3.extent(data, function(d) { return d[1]; })).nice();
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Year");
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("1")
+
+  svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d.Year); })
+      .attr("cy", function(d) { return y(d[1]); })
+      .style("fill", function(d) { return color(d[4]); });
+
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+});
+      
+      
+      
+      
+    }
+
+    console.log('Confidence: ' + event.results[0][0].confidence);
+  }
+
+  recognition.onspeechend = function() {
+    recognition.stop();
+    testBtn.disabled = false;
+    testBtn.textContent = 'Speak';
+  }
+
+  recognition.onerror = function(event) {
+    testBtn.disabled = false;
+    testBtn.textContent = 'Speak';
+   
+  }
+
+}
+
+testBtn.addEventListener('click', testSpeech);
+        
+        
+        
+        
+    </script>
+    </div>     
+   
+  </body>
+</html>
